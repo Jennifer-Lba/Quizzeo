@@ -1,0 +1,30 @@
+{
+  // GENERAL
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // PRETTIER
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "files.eol": "\n",
+  "prettier.printWidth": 100,
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "es5",
+
+  // PHP
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+    "editor.detectIndentation": false,
+    "editor.indentSize": 4,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+
+  // EMMET
+  "emmet.includeLanguages": {
+    "php": "html"
+  },
+  "emmet.triggerExpansionOnTab": true
+}
