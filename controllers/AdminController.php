@@ -121,7 +121,7 @@ if (isset($_GET['action'])) {
     $action = sanitize($_GET['action']);
 
     // Liste blanche (actions autorisées)
-    $allowedActions = ['deleteUser', 'deleteQuiz', 'setUserActive', 'setQuizStatus'];
+    $allowedActions = ['setUserActive', 'setQuizStatus'];
 
     if (!in_array($action, $allowedActions)) {
         redirect('../views/admin/dashboard.php?error=invalid_action');
