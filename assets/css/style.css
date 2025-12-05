@@ -1,0 +1,149 @@
+body, h1, h2, p, ul, li, form {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: "Inter", "SF Pro Display", sans-serif;
+    background: linear-gradient(135deg, #a8c0ff, #fbc2eb);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;   
+    padding-top: 40px;
+    color: #333;
+}
+
+
+body > img,
+body > h1,
+body > p,
+section {
+    width: 100%;
+    max-width: 500px;      
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+img[alt="Quizzeo Logo"] {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 250px;   /* ← TAILLE DEMANDÉE */
+    animation: pulse 4s ease-in-out infinite;
+}
+
+
+h1 {
+    font-size: 40px;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    margin-bottom: 10px;
+}
+
+
+section {
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(20px);
+    padding: 30px;
+    border-radius: 25px;
+    margin-top: 35px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    animation: fadeIn 0.8s ease-out;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+
+label {
+    display: block;
+    text-align: left;
+    margin: 12px 0 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255,255,255,0.7);
+    border: none;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    transition: 0.25s;
+}
+
+input:focus {
+    transform: scale(1.03);
+    background: white;
+    box-shadow: 0 0 15px rgba(255,255,255,0.8);
+}
+
+
+button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #6d4aff, #ad7bff);
+    box-shadow: 0 10px 25px rgba(109,74,255,0.3);
+    transition: 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(109,74,255,0.45);
+}
+
+
+a {
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: 0.3s;
+}
+
+a:hover {
+    color: #ffe7ff;
+}
+
+
+ul {
+    list-style: none;
+    margin-top: 12px;
+    padding-left: 0;
+}
+
+ul li {
+    background: rgba(255,255,255,0.55);
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 14px;
+    transition: 0.25s;
+    font-weight: 500;
+}
+
+ul li:hover {
+    transform: translateX(6px);
+    background: rgba(255,255,255,0.85);
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px);}
+    to   { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: .9; }
+    50%      { transform: scale(1.07); opacity: 1; }
+}
