@@ -1,81 +1,5 @@
+
 <?php
-require_once __DIR__ . '/../../helpers/functions.php';
-require_once __DIR__ . '/../../config/conf.php';
-require_once __DIR__ . '/../../models/question.php';
-
-requireLogin();
-// Autoriser uniquement : administrateur (admin/administrateur), école ou entreprise (créateurs de quiz)
-requireRole(['admin', 'administrateur', 'école', 'entreprise']);
-
-// Récupère l'ID du quiz
-$quiz_id = get('quiz_id') ?? $_POST['quiz_id'] ?? null;
-if (!$quiz_id) {
-    redirect('/views/quiz/dashboard_school.php');
-}
-
-// Récupérer le quiz
-$stmt = $conn->prepare("SELECT * FROM quizzes WHERE id = ?");
-$stmt->execute([$quiz_id]);
-$quiz = $stmt->fetch();
-
-if (!$quiz) {
-    redirect('/views/quiz/dashboard_school.php');
-}
-
-// Vérifier que l'utilisateur est le créateur du quiz (comparer en int) ou un admin
-if ((int)$quiz['creator_id'] !== (int)($_SESSION['user']['id'] ?? 0) && !isAdmin()) {
-    die("Accès refusé.");
-}
-
-$message = '';
-
-// Traiter l'ajout de question
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_question') {
-    $question_text = post('question_text');
-    $type = post('type') ?? 'qcm';
-    $points = intval(post('points') ?? 1);
-
-    if ($question_text) {
-        $choices = [];
-        if ($type === 'qcm') {
-            $choices_textarea = post('choices_textarea') ?? '';
-            $lines = array_values(array_filter(array_map('trim', explode("\n", $choices_textarea))));
-            $correct_choice = intval(post('correct_choice') ?? 0) - 1; // 1-based input
-            foreach ($lines as $i => $line) {
-                $choices[] = [
-                    'choice_text' => $line,
-                    'is_correct' => ($i === $correct_choice) ? 1 : 0
-                ];
-            }
-        }
-
-        if (Question::create($quiz_id, $question_text, $type, $points, $choices)) {
-            $message = "Question ajoutée avec succès !";
-        } else {
-            $message = "Erreur lors de l'ajout de la question.";
-        }
-    } else {
-        $message = "Veuillez remplir tous les champs.";
-    }
-}
-
-// Traiter la suppression de question
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_question') {
-    $question_id = $_POST['question_id'] ?? null;
-    if ($question_id) {
-        $stmt = $conn->prepare("DELETE FROM questions WHERE id = ? AND quiz_id = ?");
-        $stmt->execute([$question_id, $quiz_id]);
-        $message = "Question supprimée !";
-    }
-}
-
-// Récupérer les questions existantes
-$stmt = $conn->prepare("SELECT * FROM questions WHERE quiz_id = ? ORDER BY id ASC");
-$stmt->execute([$quiz_id]);
-$questions = $stmt->fetchAll();
-?>
-<?php
-
 require_once __DIR__ . '/../config/conf.php';
  
 class Question
@@ -153,9 +77,7 @@ class Question
         return $delQ->execute();
     }
 }
- 
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
