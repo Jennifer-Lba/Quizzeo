@@ -96,6 +96,13 @@ class AuthController
             exit;
         }
 
+        //Empêcher la connexion si le compte a été désactivé
+        if (isset($user['is_active']) && !$user['is_active']) {
+            $_SESSION['error'] = "Ce compte est désactivé. Contactez l'administrateur.";
+            header("Location: /views/auth/login.php");
+            exit;
+        }
+
         if (!password_verify($password, $user['password'])) {
             $_SESSION['error'] = "Mot de passe incorrect.";
             header("Location: /views/auth/login.php");
