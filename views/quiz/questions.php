@@ -28,6 +28,7 @@ if ((int)$quiz['creator_id'] !== (int)($_SESSION['user']['id'] ?? 0) && !isAdmin
 }
  
 $message = '';
+$pending_delete_question = null;
  
 // Traiter l'ajout de question
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_question') {
@@ -62,10 +63,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Traiter la suppression de question
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_question') {
     $question_id = $_POST['question_id'] ?? null;
+    $confirm_delete_answers = isset($_POST['confirm_delete_answers']) && $_POST['confirm_delete_answers'] == '1';
     if ($question_id) {
-        $stmt = $conn->prepare("DELETE FROM questions WHERE id = ? AND quiz_id = ?");
-        $stmt->execute([$question_id, $quiz_id]);
-        $message = "Question supprimée !";
+        // Vérifier s'il y a des réponses liées dans answers_quiz
+        $chk = $conn->prepare("SELECT COUNT(*) as c FROM answers_quiz WHERE question_id = ?");
+        $chk->execute([$question_id]);
+        $cnt = (int)($chk->fetchColumn() ?? 0);
+
+        if ($cnt > 0 && !$confirm_delete_answers) {
+            // Ne pas tenter la suppression brute qui déclenche une erreur FK
+            $message = "Impossible de supprimer la question : " . $cnt . " réponse(s) enregistrée(s). " .
+                       "Pour supprimer la question, confirmez la suppression de toutes les réponses associées.";
+            // store a small flag to show a confirm form for this question
+            $pending_delete_question = $question_id;
+        } else {
+            // soit pas de réponses, soit confirmation fournie -> supprimer les réponses puis la question
+            if ($cnt > 0) {
+                $delAnswers = $conn->prepare("DELETE FROM answers_quiz WHERE question_id = ?");
+                $delAnswers->execute([$question_id]);
+            }
+            $stmt = $conn->prepare("DELETE FROM questions WHERE id = ? AND quiz_id = ?");
+            $stmt->execute([$question_id, $quiz_id]);
+            $message = "Question supprimée !";
+        }
     }
 }
  
@@ -254,6 +274,16 @@ $questions = $stmt->fetchAll();
             <div class="message <?= strpos($message, 'Erreur') !== false ? 'error' : 'success' ?>">
                 <?= htmlspecialchars($message) ?>
             </div>
+            <?php if (!empty($pending_delete_question)) : ?>
+                <div style="text-align:center;margin-bottom:16px;">
+                    <form method="POST" onsubmit="return confirm('Confirmer la suppression de la question et de toutes les réponses associées ?');">
+                        <input type="hidden" name="action" value="delete_question">
+                        <input type="hidden" name="question_id" value="<?= (int)$pending_delete_question ?>">
+                        <input type="hidden" name="confirm_delete_answers" value="1">
+                        <button type="submit" style="background:#c62828;color:#fff;padding:10px 16px;border-radius:6px;border:none;cursor:pointer;">Supprimer la question et toutes les réponses</button>
+                    </form>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
  
         <div class="form-section">
