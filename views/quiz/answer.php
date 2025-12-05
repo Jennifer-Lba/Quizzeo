@@ -37,7 +37,10 @@ foreach ($rows as $row) {
         ];
     }
     if ($row['choice_id']) {
-        $questions[$qId]['choices'][] = $row['choice_text'];
+        $questions[$qId]['choices'][] = [
+            'id' => $row['choice_id'],
+            'text' => $row['choice_text']
+        ];
     }
 }
 ?>
@@ -60,8 +63,8 @@ foreach ($rows as $row) {
             <?php if ($q['type'] === 'qcm'): ?>
                 <?php foreach ($q['choices'] as $choice): ?>
                     <label>
-                        <input type="radio" name="answers[<?= $q['id'] ?>]" value="<?= htmlspecialchars($choice) ?>">
-                        <?= htmlspecialchars($choice) ?>
+                        <input type="radio" name="answers[<?= $q['id'] ?>]" value="<?= (int)$choice['id'] ?>">
+                        <?= htmlspecialchars($choice['text']) ?>
                     </label><br>
                 <?php endforeach; ?>
             <?php else: ?>
